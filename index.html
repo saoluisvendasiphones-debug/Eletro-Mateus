@@ -1569,28 +1569,19 @@
         }
 
         function prepareWhatsAppMessage(formData) {
-            let message = `🛒 *NOVO PEDIDO - São Luis iPhones*\n\n`;
+            let message = `Olá, bom dia! Gostaria de comprar:\n\n`;
             
             formData.pedido.forEach((item, index) => {
-                message += `*Item ${index + 1}:* ${item.name}\n`;
-                message += `*Cor:* ${item.color}\n`;
-                message += `*Quantidade:* ${item.quantity}\n`;
+                message += `*${item.name} - ${item.color}*\n`;
+                message += `Quantidade: ${item.quantity}\n`;
                 if (item.accessories.length > 0) {
-                    message += `*Acessórios:* ${item.accessories.map(a => a.name).join(', ')}\n`;
+                    message += `Acessórios: ${item.accessories.map(a => a.name).join(', ')}\n`;
                 }
                 message += `\n`;
             });
             
-            message += `*Total: R$ ${formData.total.toFixed(2).replace('.', ',')}*\n\n`;
-            message += `*Dados do Cliente:*\n`;
-            message += `👤 Nome: ${formData.nomeCompleto}\n`;
-            message += `📧 Email: ${formData.email}\n`;
-            message += `📱 WhatsApp: ${formData.whatsapp}\n`;
-            message += `📍 Endereço: ${formData.endereco}\n`;
-            message += `🏠 Bairro: ${formData.bairro}\n`;
-            message += `🏙️ Cidade: ${formData.cidade}\n`;
-            message += `📮 CEP: ${formData.cep}\n\n`;
-            message += `⏰ ${formData.dataHora}`;
+            message += `*Valor Total: R$ ${formData.total.toFixed(2).replace('.', ',')}*\n\n`;
+            message += `Obrigado!`;
             
             return message;
         }
