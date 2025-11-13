@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>São Luis iPhones | iPhones e Acessórios Apple</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #007AFF;
+            --primary-dark: #0056CC;
+            --primary-light: #4DA6FF;
+            --secondary-color: #1D1D1F;
+            --accent-color: #FF2D55;
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --text-muted: #A2A2A5;
+            --background-white: #FFFFFF;
+            --background-light: #F5F5F7;
+            --background-gray: #F2F2F2;
+            --border-color: #D2D2D7;
+            --border-light: #E8E8ED;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --error-color: #FF3B30;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--background-white);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Banner Promocional */
+        .promo-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Header */
+        .header {
+            background: var(--background-white);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 44px;
+            z-index: 999;
+            backdrop-filter: blur(20px);
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-badge {
+            position: relative;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0 80px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--background-light) 0%, var(--background-white) 100%);
+            border-radius: 20px;
+            margin-bottom: 60px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        /* Product Section */
+        .product-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 80px;
+            background: var(--background-white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+
+        @media (max-width: 968px) {
+            .product-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 32px 24px;
+            }
+        }
+
+        /* Product Gallery */
+        .product-gallery {
+            position: relative;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: var(--background-light);
+            padding: 40px;
+        }
+
+        .image-thumbnails {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-color);
+        }
+
+        /* Product Info */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .product-header {
+            margin-bottom: 8px;
+        }
+
+        .product-brand {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .product-title {
+            font-size: 32px;
+            color: var(--text-primary);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stars {
+            color: #FFD700;
+            font-size: 16px;
+        }
+
+        .rating-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Price Section */
+        .price-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .price-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .old-price {
+            font-size: 18px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+
+        .discount-badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .current-price {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+        }
+
+        .price-installment {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Stock Warning */
+        .stock-warning {
+            background: rgba(255, 149, 0, 0.1);
+            border: 1px solid var(--warning-color);
+            padding: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .warning-icon {
+            color: var(--warning-color);
+            font-size: 20px;
+        }
+
+        #stockMessage {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Selection Groups */
+        .selection-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .selection-group h3 {
+            font-size: 18px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .model-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .model-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 16px 20px;
+            border: 2px solid var(--border-color);
+            background: var(--background-white);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-primary);
+        }
+
+        .model-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .model-price {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .model-btn:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .model-btn.active {
+            border-color: var(--primary-color);
+            background: rgba(0, 122, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .stock-badge {
+            font-size: 11px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .color-btn:hover:not(.sold-out) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .color-btn.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+        }
+
+        .color-btn.sold-out {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .color-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            white-space: nowrap;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Accessories Section */
+        .accessories-section {
+            margin: 24px 0;
+        }
+
+        .accessories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .accessory-item {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .accessory-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .accessory-item.selected {
+            border-color: var(--primary-color);
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .accessory-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .accessory-price {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        /* Features */
+        .product-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--background-light);
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .feature-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .feature-content strong {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .feature-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--background-light);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 80px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .footer p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--background-white);
+            margin: auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            border: 1px solid var(--border-light);
+        }
+
+        .modal-close {
+            color: var(--text-secondary);
+            float: right;
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: var(--background-white);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: var(--error-color);
+            background: rgba(255, 59, 48, 0.05);
+        }
+
+        .form-group input.success {
+            border-color: var(--success-color);
+            background: rgba(52, 199, 89, 0.05);
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Cart Styles */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-total {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-light);
+        }
+
+        /* CEP Search Styles */
+        .cep-loading {
+            position: relative;
+        }
+
+        .cep-loading::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--primary-color);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .address-info {
+            background: var(--background-light);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 8px;
+            border: 1px solid var(--border-light);
+            display: none;
+        }
+
+        .address-info.show {
+            display: block;
+        }
+
+        .address-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .address-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .address-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .address-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .address-complement {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .product-title {
+                font-size: 24px;
+            }
+            
+            .current-price {
+                font-size: 32px;
+            }
+            
+            .model-options {
+                flex-direction: column;
+            }
+            
+            .model-btn {
+                width: 100%;
+            }
+
+            .address-complement {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Banner Promocional -->
+    <div class="promo-banner">
+        <div class="banner-content">
+            <span class="pulse">🎉</span>
+            <span>FRETE GRÁTIS PARA SÃO LUÍS | 7 APARELHOS DISPONÍVEIS</span>
+            <span class="pulse">🎉</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-section">
+                <h1 class="logo">São Luis <span>iPhones</span></h1>
+                <p class="tagline">Apple Authorized Reseller</p>
+            </div>
+            <div class="header-actions">
+                <div class="cart-badge" id="cartBadge">0</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h2 class="hero-title">iPhone 13 & 15</h2>
+                <p class="hero-subtitle">Experiência Apple completa com os melhores preços de São Luís</p>
+            </section>
+
+            <!-- Product Section -->
+            <section class="product-section">
+                <div class="product-gallery">
+                    <img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&h=600&fit=crop" alt="iPhone" class="main-image" id="mainImage">
+                    <div class="image-thumbnails">
+                        <img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=200&h=200&fit=crop" alt="iPhone 1" class="thumbnail active" onclick="changeImage(this.src)">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop" alt="iPhone 2" class="thumbnail" onclick="changeImage(this.src)">
+                        <img src="https://images.unsplash.com/photo-1573141597928-403fcee0e056?w=200&h=200&fit=crop" alt="iPhone 3" class="thumbnail" onclick="changeImage(this.src)">
+                    </div>
+                </div>
+
+                <div class="product-info">
+                    <!-- Product Header -->
+                    <div class="product-header">
+                        <div class="product-brand">Apple</div>
+                        <h2 class="product-title" id="productTitleDisplay">iPhone 13 128GB</h2>
+                        <div class="product-rating">
+                            <span class="stars">★★★★★</span>
+                            <span class="rating-text">4.9 (2.147 avaliações)</span>
+                        </div>
+                    </div>
+
+                    <!-- Price Section -->
+                    <div class="price-section">
+                        <div class="price-wrapper">
+                            <span class="old-price" id="oldPriceDisplay">De R$ 4.999,00</span>
+                            <span class="discount-badge">-98% OFF</span>
+                        </div>
+                        <span class="current-price" id="currentPriceDisplay">R$ 119,99</span>
+                        <div class="price-installment" id="priceInstallment">ou 12x de R$ 9,99 sem juros</div>
+                    </div>
+
+                    <!-- Stock Warning -->
+                    <div class="stock-warning">
+                        <span class="warning-icon">⚠️</span>
+                        <span id="stockMessage">Apenas 7 unidades disponíveis! Última chance!</span>
+                    </div>
+
+                    <!-- Model Selection -->
+                    <div class="selection-group">
+                        <h3>Selecione o Modelo:</h3>
+                        <div class="model-options">
+                            <button class="model-btn active" data-model="iphone13" data-price="119.99">
+                                <span class="model-name">iPhone 13 128GB</span>
+                                <span class="model-price">R$ 119,99</span>
+                                <span class="stock-badge">7 disponíveis</span>
+                            </button>
+                            <button class="model-btn" data-model="iphone15" data-price="180.99">
+                                <span class="model-name">iPhone 15 128GB</span>
+                                <span class="model-price">R$ 180,99</span>
+                                <span class="stock-badge">7 disponíveis</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="selection-group">
+                        <h3>Selecione a Cor:</h3>
+                        <div class="color-options" id="colorOptions">
+                            <!-- Colors will be populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Accessories Section -->
+                    <div class="selection-group accessories-section">
+                        <h3>Acessórios Recomendados (+ R$ 13,00 cada):</h3>
+                        <div class="accessories-grid" id="accessoriesGrid">
+                            <!-- Accessories will be populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Quantity Selection -->
+                    <div class="selection-group">
+                        <h3>Quantidade (Máx. 2 por cliente):</h3>
+                        <div class="quantity-selector">
+                            <select id="quantitySelect" class="form-group" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px;">
+                                <option value="1">1 unidade</option>
+                                <option value="2">2 unidades</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="buyBtn">
+                            🛒 Comprar Agora
+                        </button>
+                        <button class="btn btn-secondary" id="cartBtn">
+                            ➕ Adicionar ao Carrinho
+                        </button>
+                    </div>
+                    
+                    <!-- Features -->
+                    <div class="product-features">
+                        <div class="feature-item">
+                            <span class="feature-icon">🚚</span>
+                            <div class="feature-content">
+                                <strong>Entrega em 24h</strong>
+                                <p>Para São Luís e região</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔒</span>
+                            <div class="feature-content">
+                                <strong>Compra Segura</strong>
+                                <p>Dados protegidos</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">↩️</span>
+                            <div class="feature-content">
+                                <strong>Garantia 12 meses</strong>
+                                <p>Assistência Apple</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">💳</span>
+                            <div class="feature-content">
+                                <strong>Parcelamento</strong>
+                                <p>Até 12x sem juros</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 São Luis iPhones. Todos os direitos reservados. CNPJ: 12.345.678/0001-90</p>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeCartModal">&times;</span>
+            <h2>Seu Carrinho</h2>
+            <div id="cartItems">
+                <!-- Cart items will be populated here -->
+            </div>
+            <div class="cart-total" id="cartTotal">Total: R$ 0,00</div>
+            <div class="action-buttons" style="margin-top: 24px;">
+                <button class="btn btn-primary" onclick="closeCartModal(); openCheckoutModal();">Finalizar Compra</button>
+                <button class="btn btn-secondary" onclick="closeCartModal()">Continuar Comprando</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeCheckoutModal">&times;</span>
+            <h2>Finalizar Compra</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="fullName">Nome Completo *</label>
+                    <input type="text" id="fullName" name="fullName" required placeholder="Seu nome completo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp *</label>
+                    <input type="tel" id="whatsapp" name="whatsapp" required placeholder="(98) 99999-9999">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cep">CEP *</label>
+                    <input type="text" id="cep" name="cep" required placeholder="00000-000" maxlength="9">
+                    <div id="addressInfo" class="address-info">
+                        <div class="address-line">
+                            <span class="address-label">Endereço:</span>
+                            <span class="address-value" id="addressStreet"></span>
+                        </div>
+                        <div class="address-line">
+                            <span class="address-label">Bairro:</span>
+                            <span class="address-value" id="addressDistrict"></span>
+                        </div>
+                        <div class="address-line">
+                            <span class="address-label">Cidade/UF:</span>
+                            <span class="address-value" id="addressCityState"></span>
+                        </div>
+                        <div class="address-complement">
+                            <div class="form-group">
+                                <label for="houseNumber">Número *</label>
+                                <input type="text" id="houseNumber" name="houseNumber" required placeholder="Nº">
+                            </div>
+                            <div class="form-group">
+                                <label for="complement">Complemento</label>
+                                <input type="text" id="complement" name="complement" placeholder="Apto, Bloco, etc">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cart-total" style="margin: 24px 0;">Total: <span id="finalTotal">R$ 0,00</span></div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span id="submitBtnText">Confirmar Pedido</span>
+                    <span id="submitBtnLoader" class="loader" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos produtos
+        const products = {
+            iphone13: {
+                name: 'iPhone 13 128GB',
+                basePrice: 119.99,
+                oldPrice: 4999.00,
+                colors: ['Preto', 'Branco', 'Azul', 'Verde', 'Rosa'],
+                specs: {
+                    tela: 'Super Retina XDR 6.1"',
+                    camera: 'Sistema de câmera dupla 12MP',
+                    chip: 'Chip A15 Bionic',
+                    bateria: 'Até 19 horas de vídeo'
+                }
+            },
+            iphone15: {
+                name: 'iPhone 15 128GB',
+                basePrice: 180.99,
+                oldPrice: 5999.00,
+                colors: ['Preto', 'Azul', 'Verde', 'Rosa', 'Amarelo'],
+                specs: {
+                    tela: 'Super Retina XDR 6.1"',
+                    camera: 'Câmera de 48 MP',
+                    chip: 'Chip A16 Bionic',
+                    bateria: 'Até 20 horas de vídeo'
+                }
+            }
+        };
+
+        // Acessórios
+        const accessories = [
+            { name: 'Capa de Silicone', price: 13.00 },
+            { name: 'Película de Vidro', price: 13.00 },
+            { name: 'Fone AirPods', price: 22.00 },
+            { name: 'Carregador 20W', price: 15.00 },
+            { name: 'Cabo USB-C', price: 10.00 },
+            { name: 'Suporte p/ Mesa', price: 18.00 }
+        ];
+
+        // Estado atual
+        let currentModel = 'iphone13';
+        let currentColor = null;
+        let selectedAccessories = [];
+        let cart = [];
+        let cartCount = 0;
+        let cepTimeout = null;
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            databaseURL: "https://saoluisbanco-default-rtdb.firebaseio.com/"
+        };
+
+        // Initialize Firebase
+        function initializeFirebase() {
+            try {
+                if (typeof firebase !== 'undefined') {
+                    if (!firebase.apps || firebase.apps.length === 0) {
+                        firebase.initializeApp(firebaseConfig);
+                    }
+                    console.log("✅ Firebase inicializado");
+                    return true;
+                }
+            } catch (error) {
+                console.error("❌ Erro ao inicializar Firebase:", error);
+            }
+            return false;
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            initModelSelection();
+            initColorSelection();
+            initAccessories();
+            initButtons();
+            initModals();
+            initCepAutoSearch();
+            updateDisplay();
+        });
+
+        // Inicializar busca automática de CEP
+        function initCepAutoSearch() {
+            const cepInput = document.getElementById('cep');
+            
+            // Formatação automática do CEP
+            cepInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 5) {
+                    value = value.substring(0,5) + '-' + value.substring(5,8);
+                }
+                e.target.value = value;
+                
+                // Limpar timeout anterior
+                if (cepTimeout) {
+                    clearTimeout(cepTimeout);
+                }
+                
+                // Buscar CEP automaticamente após 1 segundo sem digitar
+                if (value.length === 9) { // CEP completo com traço
+                    cepInput.classList.add('cep-loading');
+                    cepTimeout = setTimeout(() => {
+                        searchCep();
+                    }, 1000);
+                } else {
+                    // Resetar estado se CEP estiver incompleto
+                    resetCepFields();
+                }
+            });
+            
+            // Limpar loading quando o campo perder o foco
+            cepInput.addEventListener('blur', () => {
+                cepInput.classList.remove('cep-loading');
+            });
+        }
+
+        // Função para buscar CEP automaticamente
+        async function searchCep() {
+            const cepInput = document.getElementById('cep');
+            const addressInfo = document.getElementById('addressInfo');
+            const cep = cepInput.value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) {
+                resetCepFields();
+                return;
+            }
+            
+            try {
+                // Mostrar loading
+                cepInput.classList.add('cep-loading');
+                
+                const response = await fetch(`https://cep.awesomeapi.com.br/json/${cep}`);
+                const data = await response.json();
+                
+                // Remover loading
+                cepInput.classList.remove('cep-loading');
+                
+                if (data.cep) {
+                    // Preencher informações do endereço
+                    document.getElementById('addressStreet').textContent = data.address;
+                    document.getElementById('addressDistrict').textContent = data.district;
+                    document.getElementById('addressCityState').textContent = `${data.city} - ${data.state}`;
+                    
+                    // Mostrar informações do endereço
+                    addressInfo.classList.add('show');
+                    
+                    // Marcar campo como válido
+                    cepInput.classList.remove('error');
+                    cepInput.classList.add('success');
+                    
+                    // Focar no campo do número da casa
+                    document.getElementById('houseNumber').focus();
+                    
+                } else {
+                    throw new Error('CEP não encontrado');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao buscar CEP:', error);
+                // Marcar campo como inválido
+                cepInput.classList.remove('success');
+                cepInput.classList.add('error');
+                addressInfo.classList.remove('show');
+            }
+        }
+
+        // Resetar campos do CEP
+        function resetCepFields() {
+            const cepInput = document.getElementById('cep');
+            const addressInfo = document.getElementById('addressInfo');
+            
+            cepInput.classList.remove('cep-loading', 'success', 'error');
+            addressInfo.classList.remove('show');
+        }
+
+        // Trocar imagem principal
+        function changeImage(src) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Seleção de modelo
+        function initModelSelection() {
+            const modelButtons = document.querySelectorAll('.model-btn');
+            
+            modelButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modelButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    currentModel = btn.dataset.model;
+                    currentColor = null;
+                    updateDisplay();
+                    updateColorOptions();
+                });
+            });
+        }
+
+        // Atualizar display
+        function updateDisplay() {
+            const product = products[currentModel];
+            
+            document.getElementById('productTitleDisplay').textContent = product.name;
+            document.getElementById('currentPriceDisplay').textContent = `R$ ${product.basePrice.toFixed(2).replace('.', ',')}`;
+            document.getElementById('oldPriceDisplay').textContent = `De R$ ${product.oldPrice.toFixed(2).replace('.', ',')}`;
+            
+            const installment = (product.basePrice / 12).toFixed(2).replace('.', ',');
+            document.getElementById('priceInstallment').textContent = `ou 12x de R$ ${installment} sem juros`;
+        }
+
+        // Seleção de cores
+        function initColorSelection() {
+            updateColorOptions();
+        }
+
+        function updateColorOptions() {
+            const colorOptions = document.getElementById('colorOptions');
+            const product = products[currentModel];
+            
+            colorOptions.innerHTML = '';
+            
+            product.colors.forEach(color => {
+                const colorBtn = document.createElement('button');
+                colorBtn.className = 'color-btn';
+                colorBtn.style.backgroundColor = getColorHex(color);
+                colorBtn.dataset.color = color;
+                
+                colorBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.color-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    colorBtn.classList.add('active');
+                    currentColor = color;
+                });
+                
+                const label = document.createElement('div');
+                label.className = 'color-label';
+                label.textContent = color;
+                
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+                wrapper.appendChild(colorBtn);
+                wrapper.appendChild(label);
+                
+                colorOptions.appendChild(wrapper);
+            });
+        }
+
+        function getColorHex(color) {
+            const colorMap = {
+                'Preto': '#000000',
+                'Branco': '#FFFFFF',
+                'Azul': '#007AFF',
+                'Verde': '#34C759',
+                'Rosa': '#FF2D55',
+                'Amarelo': '#FFCC00'
+            };
+            return colorMap[color] || '#CCCCCC';
+        }
+
+        // Acessórios
+        function initAccessories() {
+            const accessoriesGrid = document.getElementById('accessoriesGrid');
+            
+            accessories.forEach(accessory => {
+                const item = document.createElement('div');
+                item.className = 'accessory-item';
+                item.innerHTML = `
+                    <div class="accessory-name">${accessory.name}</div>
+                    <div class="accessory-price">+ R$ ${accessory.price.toFixed(2).replace('.', ',')}</div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    item.classList.toggle('selected');
+                    
+                    if (item.classList.contains('selected')) {
+                        selectedAccessories.push(accessory);
+                    } else {
+                        selectedAccessories = selectedAccessories.filter(a => a.name !== accessory.name);
+                    }
+                });
+                
+                accessoriesGrid.appendChild(item);
+            });
+        }
+
+        // Botões
+        function initButtons() {
+            document.getElementById('buyBtn').addEventListener('click', () => {
+                if (!validateSelection()) return;
+                addToCart();
+                openCheckoutModal();
+            });
+            
+            document.getElementById('cartBtn').addEventListener('click', () => {
+                if (!validateSelection()) return;
+                addToCart();
+                openCartModal();
+            });
+        }
+
+        function validateSelection() {
+            if (!currentColor) {
+                alert('Por favor, selecione uma cor.');
+                return false;
+            }
+            return true;
+        }
+
+        function addToCart() {
+            const quantity = parseInt(document.getElementById('quantitySelect').value);
+            const product = products[currentModel];
+            
+            // Verifica limite do carrinho
+            const currentCartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            if (currentCartCount + quantity > 2) {
+                alert('Limite máximo de 2 unidades por cliente atingido.');
+                return;
+            }
+            
+            const cartItem = {
+                model: currentModel,
+                name: product.name,
+                color: currentColor,
+                basePrice: product.basePrice,
+                quantity: quantity,
+                accessories: [...selectedAccessories]
+            };
+            
+            cart.push(cartItem);
+            cartCount += quantity;
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            document.getElementById('cartBadge').textContent = cartCount;
+        }
+
+        // Modais
+        function initModals() {
+            // Fechar modais
+            document.getElementById('closeCartModal').addEventListener('click', closeCartModal);
+            document.getElementById('closeCheckoutModal').addEventListener('click', closeCheckoutModal);
+            
+            // Fechar ao clicar fora
+            document.getElementById('cartModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('cartModal')) {
+                    closeCartModal();
+                }
+            });
+            
+            document.getElementById('checkoutModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('checkoutModal')) {
+                    closeCheckoutModal();
+                }
+            });
+            
+            // Form submission
+            document.getElementById('checkoutForm').addEventListener('submit', handleCheckout);
+        }
+
+        function openCartModal() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            cartItems.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = (item.basePrice * item.quantity) + 
+                    item.accessories.reduce((sum, acc) => sum + acc.price, 0);
+                total += itemTotal;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div>
+                        <strong>${item.name} - ${item.color}</strong><br>
+                        <small>Quantidade: ${item.quantity}</small><br>
+                        <small>Acessórios: ${item.accessories.map(a => a.name).join(', ') || 'Nenhum'}</small>
+                    </div>
+                    <div>R$ ${itemTotal.toFixed(2).replace('.', ',')}</div>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+            
+            cartTotal.textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('cartModal').classList.add('show');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.remove('show');
+        }
+
+        function openCheckoutModal() {
+            const finalTotal = document.getElementById('finalTotal');
+            let total = cart.reduce((sum, item) => {
+                return sum + (item.basePrice * item.quantity) + 
+                    item.accessories.reduce((accSum, acc) => accSum + acc.price, 0);
+            }, 0);
+            
+            finalTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            
+            // Resetar campos do CEP quando abrir o modal
+            resetCepFields();
+            
+            document.getElementById('checkoutModal').classList.add('show');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('show');
+        }
+
+        async function handleCheckout(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtnText');
+            const loader = document.getElementById('submitBtnLoader');
+            
+            // Validar CEP
+            const cepInput = document.getElementById('cep');
+            if (cepInput.classList.contains('error') || !cepInput.classList.contains('success')) {
+                alert('Por favor, digite um CEP válido.');
+                cepInput.focus();
+                return;
+            }
+            
+            // Validar número da casa
+            const houseNumber = document.getElementById('houseNumber').value;
+            if (!houseNumber.trim()) {
+                alert('Por favor, informe o número da casa.');
+                document.getElementById('houseNumber').focus();
+                return;
+            }
+            
+            submitBtn.style.display = 'none';
+            loader.style.display = 'inline-block';
+            
+            // Coletar dados do formulário
+            const formData = {
+                nomeCompleto: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                cep: document.getElementById('cep').value,
+                endereco: `${document.getElementById('addressStreet').textContent}, ${houseNumber}`,
+                complemento: document.getElementById('complement').value,
+                bairro: document.getElementById('addressDistrict').textContent,
+                cidade: document.getElementById('addressCityState').textContent,
+                pedido: cart,
+                dataHora: new Date().toLocaleString('pt-BR'),
+                timestamp: Date.now()
+            };
+            
+            // Adicionar complemento se existir
+            if (formData.complemento) {
+                formData.endereco += `, ${formData.complemento}`;
+            }
+            
+            // Calcular total
+            const total = cart.reduce((sum, item) => {
+                return sum + (item.basePrice * item.quantity) + 
+                    item.accessories.reduce((accSum, acc) => accSum + acc.price, 0);
+            }, 0);
+            formData.total = total;
+            
+            try {
+                // Salvar no Firebase
+                await saveOrder(formData);
+                
+                // Preparar mensagem para WhatsApp
+                const message = prepareWhatsAppMessage(formData);
+                
+                // Redirecionar para WhatsApp
+                setTimeout(() => {
+                    window.location.href = `https://wa.me/5598984708467?text=${encodeURIComponent(message)}`;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Erro ao processar pedido:', error);
+                alert('Erro ao processar pedido. Tente novamente.');
+                submitBtn.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        }
+
+        async function saveOrder(formData) {
+            const orderId = 'SLIPHONE_' + Date.now();
+            const firebaseUrl = 'https://saoluisbanco-default-rtdb.firebaseio.com/pedidos_saoluisiphones.json';
+            
+            const response = await fetch(firebaseUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    orderId: orderId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Erro ao salvar pedido');
+            }
+            
+            return response.json();
+        }
+
+        function prepareWhatsAppMessage(formData) {
+            let message = `🛒 *NOVO PEDIDO - São Luis iPhones*\n\n`;
+            
+            formData.pedido.forEach((item, index) => {
+                message += `*Item ${index + 1}:* ${item.name}\n`;
+                message += `*Cor:* ${item.color}\n`;
+                message += `*Quantidade:* ${item.quantity}\n`;
+                if (item.accessories.length > 0) {
+                    message += `*Acessórios:* ${item.accessories.map(a => a.name).join(', ')}\n`;
+                }
+                message += `\n`;
+            });
+            
+            message += `*Total: R$ ${formData.total.toFixed(2).replace('.', ',')}*\n\n`;
+            message += `*Dados do Cliente:*\n`;
+            message += `👤 Nome: ${formData.nomeCompleto}\n`;
+            message += `📧 Email: ${formData.email}\n`;
+            message += `📱 WhatsApp: ${formData.whatsapp}\n`;
+            message += `📍 Endereço: ${formData.endereco}\n`;
+            message += `🏠 Bairro: ${formData.bairro}\n`;
+            message += `🏙️ Cidade: ${formData.cidade}\n`;
+            message += `📮 CEP: ${formData.cep}\n\n`;
+            message += `⏰ ${formData.dataHora}`;
+            
+            return message;
+        }
+    </script>
+</body>
+</html>
